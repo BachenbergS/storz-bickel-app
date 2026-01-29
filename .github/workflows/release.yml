@@ -27,12 +27,18 @@ jobs:
 
       - name: Build AppImage
         run: npm run build:appimage
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build DEB
         run: npm run build:deb
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build RPM
         run: npm run build:rpm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Version
         id: version
