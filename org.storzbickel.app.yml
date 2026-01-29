@@ -4,6 +4,8 @@ runtime-version: '23.08'
 sdk: org.freedesktop.Sdk
 base: org.electronjs.Electron2.BaseApp
 base-version: '23.08'
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node20
 command: storz-bickel-app
 separate-locales: false
 
@@ -20,6 +22,8 @@ finish-args:
   # Bluetooth access (für Web Bluetooth)
   - --allow=bluetooth
   - --device=all
+  - --system-talk-name=org.bluez
+  - --system-talk-name=org.freedesktop.UPower
   # GPU acceleration
   - --device=dri
   # Persist data
@@ -37,8 +41,10 @@ modules:
         # Deaktiviere ELECTRON_RUN_AS_NODE
         ELECTRON_RUN_AS_NODE: ''
     build-commands:
-      # Installiere Dependencies
-      - npm install --offline
+      # Aktiviere Node.js SDK Extension und installiere Dependencies
+      - |
+        . /usr/lib/sdk/node20/enable.sh
+        npm install --offline
       # Kopiere App-Dateien
       - cp -r . /app/storz-bickel-app
       # Erstelle Wrapper-Skript
@@ -47,7 +53,7 @@ modules:
         #!/bin/bash
         export ELECTRON_RUN_AS_NODE=
         export TMPDIR="$XDG_RUNTIME_DIR/app/$FLATPAK_ID"
-        exec /app/storz-bickel-app/node_modules/.bin/electron /app/storz-bickel-app "$@"
+        exec /app/storz-bickel-app/node_modules/electron/dist/electron --no-sandbox /app/storz-bickel-app "$@"
         EOF
       - chmod +x /app/bin/storz-bickel-app
       # Desktop-Datei installieren
