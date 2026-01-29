@@ -27,6 +27,11 @@
   </screenshots>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="1.0.1" date="2026-01-29">
+      <description>
+        <p>Flatpak-Größe optimiert: Nutzt Electron aus BaseApp statt eigener Installation (von ~500 MB auf ~5-10 MB reduziert)</p>
+      </description>
+    </release>
     <release version="1.0.0" date="2026-01-29">
       <description>
         <p>Erste Version</p>

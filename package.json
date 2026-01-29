@@ -1,6 +1,6 @@
 {
   "name": "storz-bickel-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Storz & Bickel Desktop App für Linux",
   "main": "main.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "build:appimage": "electron-builder --linux AppImage",
     "build:deb": "electron-builder --linux deb",
     "build:rpm": "electron-builder --linux rpm",
-    "build:flatpak": "./build-flatpak.sh",
+    "build:flatpak": "./flatpak/build-flatpak.sh",
     "generate:flatpak-sources": "uv run --with /tmp/flatpak-builder-tools/node flatpak-node-generator npm package-lock.json -o generated-sources.json"
   },
   "keywords": [

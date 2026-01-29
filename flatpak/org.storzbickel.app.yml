@@ -4,8 +4,6 @@ runtime-version: '23.08'
 sdk: org.freedesktop.Sdk
 base: org.electronjs.Electron2.BaseApp
 base-version: '23.08'
-sdk-extensions:
-  - org.freedesktop.Sdk.Extension.node20
 command: storz-bickel-app
 separate-locales: false
 
@@ -32,28 +30,21 @@ finish-args:
 modules:
   - name: storz-bickel-app
     buildsystem: simple
-    build-options:
-      env:
-        # npm cache directory
-        npm_config_cache: /run/build/storz-bickel-app/flatpak-node/npm-cache
-        # Electron cache
-        ELECTRON_CACHE: /run/build/storz-bickel-app/flatpak-node/electron-cache
-        # Deaktiviere ELECTRON_RUN_AS_NODE
-        ELECTRON_RUN_AS_NODE: ''
     build-commands:
-      # Aktiviere Node.js SDK Extension und installiere Dependencies
-      - |
-        . /usr/lib/sdk/node20/enable.sh
-        npm install --offline
-      # Kopiere App-Dateien
-      - cp -r . /app/storz-bickel-app
-      # Erstelle Wrapper-Skript
+      # Kopiere nur die benötigten App-Dateien (NICHT node_modules!)
+      - install -Dm644 main.js /app/storz-bickel-app/main.js
+      - install -Dm644 preload.js /app/storz-bickel-app/preload.js
+      - install -Dm644 index.html /app/storz-bickel-app/index.html
+      - install -Dm644 package.json /app/storz-bickel-app/package.json
+      - install -Dm644 assets/icon.png /app/storz-bickel-app/assets/icon.png
+      # Erstelle Wrapper-Skript (nutzt Electron aus BaseApp)
       - |
         cat > /app/bin/storz-bickel-app <<'EOF'
         #!/bin/bash
         export ELECTRON_RUN_AS_NODE=
         export TMPDIR="$XDG_RUNTIME_DIR/app/$FLATPAK_ID"
-        exec /app/storz-bickel-app/node_modules/electron/dist/electron --no-sandbox /app/storz-bickel-app "$@"
+        # Nutze Electron aus der BaseApp statt aus node_modules
+        exec zypak-wrapper /app/lib/electron/electron --no-sandbox /app/storz-bickel-app "$@"
         EOF
       - chmod +x /app/bin/storz-bickel-app
       # Desktop-Datei installieren
@@ -63,8 +54,6 @@ modules:
       # AppStream Metadaten
       - install -Dm644 org.storzbickel.app.metainfo.xml /app/share/metainfo/org.storzbickel.app.metainfo.xml
     sources:
-      # Hauptprojekt
+      # Hauptprojekt (nur die benötigten Dateien)
       - type: dir
-        path: .
-      # npm Dependencies (generiert mit flatpak-node-generator)
-      - generated-sources.json
+        path: ..

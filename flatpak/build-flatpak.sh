@@ -18,6 +18,9 @@ if ! flatpak list | grep -q "org.electronjs.Electron2.BaseApp"; then
     flatpak install -y flathub org.electronjs.Electron2.BaseApp//23.08
 fi
 
+# Wechsle ins flatpak Verzeichnis
+cd "$(dirname "$0")"
+
 # Baue das Flatpak
 echo "Baue Flatpak..."
 flatpak-builder --force-clean --user --install-deps-from=flathub \
@@ -27,11 +30,11 @@ echo
 echo "=== Build erfolgreich! ==="
 echo
 echo "Zum Installieren:"
-echo "  flatpak-builder --user --install --force-clean build-dir org.storzbickel.app.yml"
+echo "  cd flatpak && flatpak-builder --user --install --force-clean build-dir org.storzbickel.app.yml"
 echo
 echo "Zum Ausführen:"
 echo "  flatpak run org.storzbickel.app"
 echo
 echo "Zum Exportieren als .flatpak Datei:"
-echo "  flatpak-builder --repo=repo --force-clean build-dir org.storzbickel.app.yml"
+echo "  cd flatpak && flatpak-builder --repo=repo --force-clean build-dir org.storzbickel.app.yml"
 echo "  flatpak build-bundle repo storz-bickel-app.flatpak org.storzbickel.app"

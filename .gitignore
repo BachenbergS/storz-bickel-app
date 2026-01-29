@@ -10,6 +10,3 @@ flatpak-node-generator.py
 
 # IDE
 .vscode/
-
-# Release-Dokumentation (nur für Maintainer)
-RELEASE.md
