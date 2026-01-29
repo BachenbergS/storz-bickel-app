@@ -25,10 +25,9 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build AppImage
-        run: npm run build:appimage
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get Version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Build DEB
         run: npm run build:deb
@@ -40,9 +39,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get Version
-        id: version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      - name: Setup Flatpak
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install -y flathub org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08
+          flatpak install -y flathub org.electronjs.Electron2.BaseApp//23.08
+
+      - name: Build Flatpak
+        run: |
+          flatpak-builder --repo=repo --force-clean build-dir org.storzbickel.app.yml
+          flatpak build-bundle repo storz-bickel-app-${{ steps.version.outputs.version }}.flatpak org.storzbickel.app
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -50,19 +58,13 @@ jobs:
           draft: true
           generate_release_notes: false
           files: |
-            dist/*.AppImage
             dist/*.deb
             dist/*.rpm
+            storz-bickel-app-${{ steps.version.outputs.version }}.flatpak
           body: |
             ## 🎉 Release v${{ steps.version.outputs.version }}
 
             ### 📦 Installation
-
-            #### AppImage (Universal)
-            ```bash
-            chmod +x Storz-Bickel-${{ steps.version.outputs.version }}.AppImage
-            ./Storz-Bickel-${{ steps.version.outputs.version }}.AppImage
-            ```
 
             #### DEB (Debian/Ubuntu)
             ```bash
@@ -75,7 +77,10 @@ jobs:
             ```
 
             #### Flatpak
-            Siehe [FLATPAK.md](https://github.com/BachenbergS/storz-bickel-app/blob/main/FLATPAK.md) für Details.
+            ```bash
+            flatpak install storz-bickel-app-${{ steps.version.outputs.version }}.flatpak
+            flatpak run org.storzbickel.app
+            ```
 
             ---
 

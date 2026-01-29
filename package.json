@@ -31,7 +31,6 @@
     "productName": "Storz & Bickel",
     "linux": {
       "target": [
-        "AppImage",
         "deb",
         "rpm"
       ],
