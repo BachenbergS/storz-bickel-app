@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build AppImage
+        run: npm run build:appimage
+
+      - name: Build DEB
+        run: npm run build:deb
+
+      - name: Build RPM
+        run: npm run build:rpm
+
+      - name: Get Version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          generate_release_notes: false
+          files: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.rpm
+          body: |
+            ## 🎉 Release v${{ steps.version.outputs.version }}
+
+            ### 📦 Installation
+
+            #### AppImage (Universal)
+            ```bash
+            chmod +x Storz-Bickel-${{ steps.version.outputs.version }}.AppImage
+            ./Storz-Bickel-${{ steps.version.outputs.version }}.AppImage
+            ```
+
+            #### DEB (Debian/Ubuntu)
+            ```bash
+            sudo dpkg -i storz-bickel-app_${{ steps.version.outputs.version }}_amd64.deb
+            ```
+
+            #### RPM (Fedora/RHEL)
+            ```bash
+            sudo rpm -i storz-bickel-app-${{ steps.version.outputs.version }}.x86_64.rpm
+            ```
+
+            #### Flatpak
+            Siehe [FLATPAK.md](https://github.com/BachenbergS/storz-bickel-app/blob/main/FLATPAK.md) für Details.
+
+            ---
+
+            **Hinweis:** Bitte füge die Release-Notes aus [CHANGELOG.md](https://github.com/BachenbergS/storz-bickel-app/blob/main/CHANGELOG.md) hinzu und veröffentliche dann das Release.
+
+            ## 📝 Changelog
+
+            Siehe [CHANGELOG.md](https://github.com/BachenbergS/storz-bickel-app/blob/main/CHANGELOG.md) für alle Änderungen.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

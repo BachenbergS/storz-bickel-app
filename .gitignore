@@ -7,3 +7,6 @@ repo/
 flatpak-node-generator.py
 .uv/
 .ansible/
+
+# Release-Dokumentation (nur für Maintainer)
+RELEASE.md
