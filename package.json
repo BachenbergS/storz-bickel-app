@@ -17,7 +17,10 @@
     "electron",
     "desktop-app"
   ],
-  "author": "",
+  "author": {
+    "name": "BachenbergS",
+    "email": "rayjin2000@gmail.com"
+  },
   "license": "MIT",
   "devDependencies": {
     "electron": "^40.1.0",
