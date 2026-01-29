@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.storzbickel.app</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Storz & Bickel</name>
+  <summary>Desktop App für Storz & Bickel Vaporizer</summary>
+  <description>
+    <p>
+      Inoffizielle Desktop-Anwendung für die Storz & Bickel Web-App.
+      Ermöglicht die Steuerung von Storz & Bickel Vaporizern über Bluetooth.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Native Desktop-Integration</li>
+      <li>Web Bluetooth Unterstützung</li>
+      <li>Gerätesteuerung und -konfiguration</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">org.storzbickel.app.desktop</launchable>
+  <url type="homepage">https://app.storz-bickel.com/</url>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="1.0.0" date="2026-01-29">
+      <description>
+        <p>Erste Version</p>
+      </description>
+    </release>
+  </releases>
+</component>

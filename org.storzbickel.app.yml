@@ -1,0 +1,64 @@
+app-id: org.storzbickel.app
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: '23.08'
+command: storz-bickel-app
+separate-locales: false
+
+finish-args:
+  # X11 + XShm access
+  - --share=ipc
+  - --socket=x11
+  # Wayland access
+  - --socket=wayland
+  # Audio output
+  - --socket=pulseaudio
+  # Network access (für Web-App)
+  - --share=network
+  # Bluetooth access (für Web Bluetooth)
+  - --allow=bluetooth
+  - --device=all
+  # GPU acceleration
+  - --device=dri
+  # Persist data
+  - --persist=.config/storz-bickel-app
+
+modules:
+  - name: storz-bickel-app
+    buildsystem: simple
+    build-options:
+      env:
+        # npm cache directory
+        npm_config_cache: /run/build/storz-bickel-app/flatpak-node/npm-cache
+        # Electron cache
+        ELECTRON_CACHE: /run/build/storz-bickel-app/flatpak-node/electron-cache
+        # Deaktiviere ELECTRON_RUN_AS_NODE
+        ELECTRON_RUN_AS_NODE: ''
+    build-commands:
+      # Installiere Dependencies
+      - npm install --offline
+      # Kopiere App-Dateien
+      - cp -r . /app/storz-bickel-app
+      # Erstelle Wrapper-Skript
+      - |
+        cat > /app/bin/storz-bickel-app <<'EOF'
+        #!/bin/bash
+        export ELECTRON_RUN_AS_NODE=
+        export TMPDIR="$XDG_RUNTIME_DIR/app/$FLATPAK_ID"
+        exec /app/storz-bickel-app/node_modules/.bin/electron /app/storz-bickel-app "$@"
+        EOF
+      - chmod +x /app/bin/storz-bickel-app
+      # Desktop-Datei installieren
+      - install -Dm644 org.storzbickel.app.desktop /app/share/applications/org.storzbickel.app.desktop
+      # Icon installieren
+      - install -Dm644 assets/icon.png /app/share/icons/hicolor/512x512/apps/org.storzbickel.app.png
+      # AppStream Metadaten
+      - install -Dm644 org.storzbickel.app.metainfo.xml /app/share/metainfo/org.storzbickel.app.metainfo.xml
+    sources:
+      # Hauptprojekt
+      - type: dir
+        path: .
+      # npm Dependencies (generiert mit flatpak-node-generator)
+      - generated-sources.json

@@ -1,0 +1,45 @@
+{
+  "name": "storz-bickel-app",
+  "version": "1.0.0",
+  "description": "Storz & Bickel Desktop App für Linux",
+  "main": "main.js",
+  "scripts": {
+    "start": "env -u ELECTRON_RUN_AS_NODE electron .",
+    "build": "electron-builder --linux",
+    "build:appimage": "electron-builder --linux AppImage",
+    "build:deb": "electron-builder --linux deb",
+    "build:rpm": "electron-builder --linux rpm",
+    "build:flatpak": "./build-flatpak.sh",
+    "generate:flatpak-sources": "uv run --with /tmp/flatpak-builder-tools/node flatpak-node-generator npm package-lock.json -o generated-sources.json"
+  },
+  "keywords": [
+    "storz-bickel",
+    "electron",
+    "desktop-app"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^40.1.0",
+    "electron-builder": "^26.6.0"
+  },
+  "build": {
+    "appId": "com.storzbickel.app",
+    "productName": "Storz & Bickel",
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ],
+      "category": "Utility",
+      "icon": "assets/icon.png"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "assets/**/*"
+    ]
+  }
+}

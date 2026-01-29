@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.flatpak-builder/
+build-dir/
+repo/
+*.flatpak
+flatpak-node-generator.py
+.uv/

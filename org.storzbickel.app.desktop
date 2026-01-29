@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Storz & Bickel
+Comment=Desktop App für Storz & Bickel Vaporizer
+Exec=storz-bickel-app
+Icon=org.storzbickel.app
+Type=Application
+Categories=Utility;
+StartupNotify=true
+StartupWMClass=storz-bickel-app
