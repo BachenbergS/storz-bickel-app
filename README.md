@@ -2,87 +2,83 @@
 
 Eine inoffizielle Desktop-Anwendung für die Storz & Bickel Web-App (https://app.storz-bickel.com/), erstellt mit Electron.
 
-## Features
+## 🚀 Schnellstart
+
+```bash
+# Abhängigkeiten installieren
+npm install
+
+# App starten
+npm start
+```
+
+Für detaillierte Anweisungen siehe [QUICKSTART.md](QUICKSTART.md).
+
+## ✨ Features
 
 - 🖥️ Native Desktop-Anwendung für Linux
 - 🔒 Sichere Implementierung mit Context Isolation
 - 🌐 Vollständiger Zugriff auf alle Web-App-Funktionen
+- 🔵 Web Bluetooth Unterstützung für Gerätesteuerung
 - ⌨️ Tastenkombinationen und Menüs
-- 📦 Mehrere Installationsformate (AppImage, DEB, RPM)
+- 📦 Mehrere Installationsformate (AppImage, DEB, RPM, Flatpak)
 
-## Voraussetzungen
+## 📋 Voraussetzungen
 
-- Node.js (Version 16 oder höher)
-- npm oder yarn
+- Node.js (Version 20 oder höher)
+- npm
 - Linux-Betriebssystem
 
-## Installation
+## 📦 Installation
 
-### 1. Repository klonen oder Dateien herunterladen
-
-```bash
-cd ~/Code/storz-bickel-app
-```
-
-### 2. Abhängigkeiten installieren
+### Entwicklungsmodus
 
 ```bash
+# Repository klonen
+git clone git@github.com:BachenbergS/storz-bickel-app.git
+cd storz-bickel-app
+
+# Abhängigkeiten installieren
 npm install
-```
 
-## Verwendung
-
-### Entwicklungsmodus starten
-
-```bash
+# App starten
 npm start
 ```
 
-Dies startet die Anwendung im Entwicklungsmodus. Die App lädt die Storz & Bickel Web-App in einem Electron-Fenster.
+### Produktions-Build
 
-### Produktions-Build erstellen
+#### Electron-Builder (AppImage, DEB, RPM)
 
-#### Alle Linux-Formate bauen:
 ```bash
+# Alle Linux-Formate bauen
 npm run build
-```
 
-#### Nur AppImage bauen:
-```bash
+# Nur AppImage
 npm run build:appimage
-```
 
-#### Nur DEB-Paket bauen:
-```bash
+# Nur DEB-Paket
 npm run build:deb
-```
 
-#### Nur RPM-Paket bauen:
-```bash
+# Nur RPM-Paket
 npm run build:rpm
 ```
 
 Die fertigen Pakete finden Sie im `dist/` Verzeichnis.
 
-## Installation der gebauten App
+#### Flatpak
 
-### AppImage
+Für Flatpak-Installation siehe [FLATPAK.md](FLATPAK.md).
+
 ```bash
-chmod +x dist/Storz-\&-Bickel-*.AppImage
-./dist/Storz-\&-Bickel-*.AppImage
+# Flatpak bauen und installieren
+./build-flatpak.sh
+flatpak-builder --user --install --force-clean build-dir org.storzbickel.app.yml
+
+# Flatpak ausführen
+flatpak run org.storzbickel.app
 ```
 
-### DEB (Debian/Ubuntu)
-```bash
-sudo dpkg -i dist/storz-bickel-app_*.deb
-```
-
-### RPM (Fedora/RHEL/CentOS)
-```bash
-sudo rpm -i dist/storz-bickel-app-*.rpm
-```
-
-## Tastenkombinationen
+## ⌨️ Tastenkombinationen
 
 - **Ctrl+R** - Seite neu laden
 - **F11** - Vollbildmodus umschalten
@@ -92,31 +88,29 @@ sudo rpm -i dist/storz-bickel-app-*.rpm
 - **Ctrl+Minus** - Verkleinern
 - **Ctrl+0** - Zoom zurücksetzen
 
-## Projektstruktur
+## 📁 Projektstruktur
 
 ```
 storz-bickel-app/
-├── main.js           # Haupt-Electron-Prozess
-├── preload.js        # Preload-Script für Sicherheit
-├── index.html        # HTML-Wrapper für die Web-App
-├── package.json      # Projekt-Konfiguration
-├── .gitignore        # Git-Ignore-Datei
-├── assets/           # Icons und andere Assets
-│   └── icon.png      # App-Icon (512x512 empfohlen)
-└── README.md         # Diese Datei
+├── main.js                          # Haupt-Electron-Prozess
+├── preload.js                       # Preload-Script für Sicherheit
+├── index.html                       # HTML-Wrapper für die Web-App
+├── package.json                     # Projekt-Konfiguration
+├── build-flatpak.sh                 # Flatpak Build-Skript
+├── org.storzbickel.app.yml          # Flatpak-Manifest
+├── org.storzbickel.app.desktop      # Desktop-Integration
+├── org.storzbickel.app.metainfo.xml # AppStream-Metadaten
+├── screenshot.png                   # App-Screenshot
+├── assets/
+│   ├── icon.png                     # App-Icon (512x512)
+│   └── README.md                    # Icon-Dokumentation
+├── README.md                        # Diese Datei
+├── QUICKSTART.md                    # Schnellstart-Anleitung
+├── FLATPAK.md                       # Flatpak-Dokumentation
+└── SECURITY.md                      # Sicherheits-Informationen
 ```
 
-## Icon hinzufügen
-
-Um ein eigenes Icon zu verwenden:
-
-1. Erstellen Sie ein PNG-Bild mit 512x512 Pixeln
-2. Speichern Sie es als `assets/icon.png`
-3. Bauen Sie die App neu
-
-Alternativ können Sie das Storz & Bickel Logo verwenden oder ein generisches Icon erstellen.
-
-## Sicherheit
+## 🔒 Sicherheit
 
 Die App implementiert mehrere Sicherheitsmaßnahmen:
 
@@ -124,34 +118,32 @@ Die App implementiert mehrere Sicherheitsmaßnahmen:
 - **Node Integration deaktiviert**: Verhindert direkten Zugriff auf Node.js-APIs
 - **Content Security Policy**: Beschränkt erlaubte Ressourcen
 - **Navigation-Schutz**: Externe Links werden im Standard-Browser geöffnet
+- **Web Bluetooth**: Sichere Bluetooth-Kommunikation mit Berechtigungsabfrage
 
-## Fehlerbehebung
+Für Details siehe [SECURITY.md](SECURITY.md).
+
+## 🔧 Fehlerbehebung
 
 ### App startet nicht
 - Überprüfen Sie, ob alle Abhängigkeiten installiert sind: `npm install`
 - Löschen Sie `node_modules` und installieren Sie neu: `rm -rf node_modules && npm install`
+- Stellen Sie sicher, dass `ELECTRON_RUN_AS_NODE` nicht gesetzt ist: `unset ELECTRON_RUN_AS_NODE`
 
 ### Web-App lädt nicht
 - Überprüfen Sie Ihre Internetverbindung
 - Stellen Sie sicher, dass https://app.storz-bickel.com/ erreichbar ist
 - Öffnen Sie die Entwicklertools (Ctrl+Shift+I) für weitere Informationen
 
+### Bluetooth funktioniert nicht
+- Stellen Sie sicher, dass Ihr Bluetooth-Adapter aktiviert ist
+- Prüfen Sie die Bluetooth-Berechtigungen
+- Bei Flatpak: `flatpak override --user --device=all org.storzbickel.app`
+
 ### Build schlägt fehl
-- Stellen Sie sicher, dass Sie die neueste Version von Node.js verwenden
+- Stellen Sie sicher, dass Sie Node.js 20+ verwenden
 - Installieren Sie Build-Tools: `sudo apt-get install build-essential` (Debian/Ubuntu)
 
-## Hinweise
-
-- Dies ist eine **inoffizielle** Desktop-Anwendung
-- Die App ist ein Wrapper um die offizielle Web-App von Storz & Bickel
-- Alle Funktionen und Inhalte gehören Storz & Bickel
-- Für Support zur Web-App selbst wenden Sie sich bitte an Storz & Bickel
-
-## Lizenz
-
-MIT License - Siehe LICENSE-Datei für Details
-
-## Entwicklung
+## 🛠️ Entwicklung
 
 ### Entwicklertools aktivieren
 
@@ -163,14 +155,32 @@ mainWindow.webContents.openDevTools();
 
 ### Weitere Anpassungen
 
-- **Fenstergröße**: Ändern Sie `width` und `height` in [`main.js`](main.js:9)
-- **Menü**: Passen Sie das Menü-Template in [`main.js`](main.js:24) an
-- **Styling**: Bearbeiten Sie die Styles in [`index.html`](index.html:10)
+- **Fenstergröße**: Ändern Sie `width` und `height` in [`main.js`](main.js:18)
+- **Menü**: Passen Sie das Menü-Template in [`main.js`](main.js:97) an
+- **Web Bluetooth Flags**: Konfigurieren Sie in [`main.js`](main.js:7)
 
-## Beitragen
+## 📚 Dokumentation
+
+- [QUICKSTART.md](QUICKSTART.md) - Schnellstart-Anleitung für Einsteiger
+- [FLATPAK.md](FLATPAK.md) - Flatpak-Build und Installation
+- [SECURITY.md](SECURITY.md) - Sicherheitsüberlegungen und Abhängigkeiten
+- [assets/README.md](assets/README.md) - Icon-Dokumentation
+
+## ⚠️ Hinweise
+
+- Dies ist eine **inoffizielle** Desktop-Anwendung
+- Die App ist ein Wrapper um die offizielle Web-App von Storz & Bickel
+- Alle Funktionen und Inhalte gehören Storz & Bickel
+- Für Support zur Web-App selbst wenden Sie sich bitte an Storz & Bickel
+
+## 📄 Lizenz
+
+MIT License - Siehe [LICENSE](LICENSE) für Details
+
+## 🤝 Beitragen
 
 Verbesserungsvorschläge und Pull Requests sind willkommen!
 
-## Kontakt
+## 📧 Kontakt
 
-Bei Fragen oder Problemen erstellen Sie bitte ein Issue im Repository.
+Bei Fragen oder Problemen erstellen Sie bitte ein Issue im Repository: https://github.com/BachenbergS/storz-bickel-app

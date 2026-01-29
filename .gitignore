@@ -6,3 +6,4 @@ repo/
 *.flatpak
 flatpak-node-generator.py
 .uv/
+.ansible/
