@@ -8,5 +8,8 @@ flatpak-node-generator.py
 .uv/
 .ansible/
 
+# IDE
+.vscode/
+
 # Release-Dokumentation (nur für Maintainer)
 RELEASE.md
