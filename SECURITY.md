@@ -7,13 +7,13 @@ Diese Electron-App benötigt nur zwei Haupt-Abhängigkeiten:
 ### 1. Electron (Runtime)
 - **Zweck**: Framework für Desktop-Apps
 - **Benötigt für**: Die App selbst auszuführen
-- **Version**: ^35.7.5 (aktuellste sichere Version)
+- **Version**: ^40.1.0 (aktuelle Version mit Node.js 24.11.1)
 - **Kann nicht entfernt werden**: Ja, ist die Basis der App
 
 ### 2. Electron-Builder (Build-Tool)
 - **Zweck**: Erstellt installierbare Pakete (AppImage, DEB, RPM)
 - **Benötigt für**: Nur zum Bauen der Distributionspakete
-- **Version**: ^26.6.0 (aktuellste Version)
+- **Version**: ^26.6.0 (aktuelle Version)
 - **Kann entfernt werden**: Ja, wenn Sie nur `npm start` verwenden
 
 ## Sicherheitsüberlegungen
@@ -32,14 +32,32 @@ webPreferences: {
   nodeIntegration: false,        // Verhindert Node.js-Zugriff aus Web-Content
   contextIsolation: true,        // Isoliert Electron-APIs vom Web-Content
   webSecurity: true,             // Aktiviert Web-Sicherheit
-  allowRunningInsecureContent: false  // Blockiert unsichere Inhalte
+  allowRunningInsecureContent: false,  // Blockiert unsichere Inhalte
+  preload: path.join(__dirname, 'preload.js')  // Sicherer Preload-Script
 }
 ```
 
+### Web Bluetooth Sicherheit:
+
+Die App implementiert Web Bluetooth mit expliziten Berechtigungsabfragen:
+
+```javascript
+// Bluetooth-Berechtigungen werden pro Anfrage geprüft
+ses.setPermissionRequestHandler((webContents, permission, callback) => {
+  if (permission === 'bluetooth' || permission === 'bluetoothDevices') {
+    callback(true);  // Erlaubt nach Benutzerbestätigung
+  } else {
+    callback(false);
+  }
+});
+```
+
 ### Content Security Policy (CSP):
-Die [`index.html`](index.html:5) enthält eine strenge CSP, die nur Ressourcen von storz-bickel.com erlaubt.
+
+Die [`index.html`](index.html) enthält eine strenge CSP, die nur Ressourcen von storz-bickel.com erlaubt.
 
 ### Navigation-Schutz:
+
 Externe Links werden automatisch im Standard-Browser geöffnet, nicht in der App.
 
 ## Alternative: Minimale Installation
@@ -81,9 +99,25 @@ npm update
 Für den produktiven Einsatz:
 
 1. **Verwenden Sie die neuesten Versionen** von Electron und electron-builder
-2. **Entfernen Sie die Zertifikatsfehler-Behandlung** in [`main.js`](main.js:115) (nur für Entwicklung)
-3. **Deaktivieren Sie DevTools** in der Produktion
-4. **Code-Signing**: Signieren Sie die App für zusätzliche Sicherheit
+2. **Deaktivieren Sie DevTools** in der Produktion (entfernen Sie `openDevTools()` Aufrufe)
+3. **Code-Signing**: Signieren Sie die App für zusätzliche Sicherheit
+4. **Testen Sie Web Bluetooth** gründlich mit Ihren Geräten
+
+## Wichtige Umgebungsvariable
+
+### ELECTRON_RUN_AS_NODE
+
+Diese Umgebungsvariable **darf nicht gesetzt sein**, da sie Electron im Node-Modus statt im Browser-Modus startet. Das Start-Skript in [`package.json`](package.json) entfernt diese Variable automatisch:
+
+```json
+"start": "env -u ELECTRON_RUN_AS_NODE electron ."
+```
+
+Falls die App nicht startet, prüfen Sie:
+```bash
+echo $ELECTRON_RUN_AS_NODE  # Sollte leer sein
+unset ELECTRON_RUN_AS_NODE  # Falls gesetzt
+```
 
 ## Vergleich mit Alternativen
 
@@ -91,12 +125,21 @@ Für den produktiven Einsatz:
 - ✅ Etabliert und weit verbreitet
 - ✅ Große Community und Support
 - ✅ Einfache Web-App-Integration
+- ✅ Web Bluetooth Unterstützung
 - ❌ Größere Dateigröße (~150MB)
 
 ### Alternativen:
-- **Tauri**: Leichtgewichtiger, aber komplexer Setup
+- **Tauri**: Leichtgewichtiger, aber komplexer Setup und eingeschränkte Web-API-Unterstützung
 - **NW.js**: Ähnlich wie Electron, weniger populär
-- **Browser-Wrapper**: Minimalistisch, aber weniger Features
+- **Browser-Wrapper**: Minimalistisch, aber weniger Features und keine Web Bluetooth Unterstützung
+
+## Flatpak-Sicherheit
+
+Bei Verwendung als Flatpak:
+- Flatpak bietet zusätzliche Sandbox-Isolation
+- Electron's eigene Sandbox wird mit `--no-sandbox` deaktiviert (Flatpak übernimmt)
+- Bluetooth-Zugriff erfordert explizite Berechtigungen im Manifest
+- System-D-Bus-Zugriff für Bluetooth (`org.bluez`)
 
 ## Fazit
 
@@ -106,4 +149,4 @@ Die verwendeten Abhängigkeiten sind **notwendig und sicher** für eine Electron
 2. **Build-Tools** (nicht in der finalen App enthalten)
 3. **Bereits gepatchte Versionen** (durch Updates behoben)
 
-Die App selbst implementiert Best Practices für Electron-Sicherheit.
+Die App selbst implementiert Best Practices für Electron-Sicherheit und Web Bluetooth.

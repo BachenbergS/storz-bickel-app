@@ -147,7 +147,7 @@ Für Details siehe [SECURITY.md](SECURITY.md).
 
 ### Entwicklertools aktivieren
 
-Entkommentieren Sie in [`main.js`](main.js:82) die folgende Zeile:
+Entkommentieren Sie in [`main.js`](main.js) die folgende Zeile in der `createWindow()` Funktion:
 
 ```javascript
 mainWindow.webContents.openDevTools();
@@ -155,9 +155,9 @@ mainWindow.webContents.openDevTools();
 
 ### Weitere Anpassungen
 
-- **Fenstergröße**: Ändern Sie `width` und `height` in [`main.js`](main.js:18)
-- **Menü**: Passen Sie das Menü-Template in [`main.js`](main.js:97) an
-- **Web Bluetooth Flags**: Konfigurieren Sie in [`main.js`](main.js:7)
+- **Fenstergröße**: Ändern Sie `width` und `height` in der `BrowserWindow` Konfiguration in [`main.js`](main.js)
+- **Menü**: Passen Sie das Menü-Template in der `createWindow()` Funktion in [`main.js`](main.js) an
+- **Web Bluetooth Flags**: Konfigurieren Sie die `commandLine.appendSwitch()` Aufrufe am Anfang von [`main.js`](main.js)
 
 ## 📚 Dokumentation
 
