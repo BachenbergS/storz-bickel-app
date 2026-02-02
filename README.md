@@ -6,7 +6,7 @@ Eine inoffizielle Desktop-Anwendung für die Storz & Bickel Web-App (https://app
 
 ```bash
 # Abhängigkeiten installieren
-npm install
+npm ci
 
 # App starten
 npm start

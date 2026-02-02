@@ -5,7 +5,7 @@
 ```bash
 git clone git@github.com:BachenbergS/storz-bickel-app.git
 cd storz-bickel-app
-npm install
+npm ci
 npm start
 ```
 

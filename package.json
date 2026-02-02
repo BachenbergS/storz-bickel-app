@@ -10,7 +10,8 @@
     "build:deb": "electron-builder --linux deb",
     "build:rpm": "electron-builder --linux rpm",
     "build:flatpak": "./flatpak/build-flatpak.sh",
-    "generate:flatpak-sources": "uv run --with /tmp/flatpak-builder-tools/node flatpak-node-generator npm package-lock.json -o generated-sources.json"
+    "generate:flatpak-sources": "uv run --with /tmp/flatpak-builder-tools/node flatpak-node-generator npm package-lock.json -o generated-sources.json",
+    "postinstall": "echo '⚠️  Scripts sind deaktiviert. Bei Bedarf manuell mit --ignore-scripts=false ausführen.'"
   },
   "keywords": [
     "storz-bickel",

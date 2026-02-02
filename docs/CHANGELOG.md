@@ -10,6 +10,19 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### Geplant
 - Weitere Verbesserungen und Features
 
+## [1.0.1] - 2026-02-02
+
+### Sicherheit
+- Node.js auf v22.22.0 aktualisiert (Security Release)
+- PackageGate-Schutz: `ignore-scripts=true` in .npmrc
+- CI/CD Pipeline auf Node.js 22.22.0 aktualisiert
+- Lockfile-Konsistenz erzwungen
+- Automatische Security Audits aktiviert
+
+### Geändert
+- `npm install` durch `npm ci` in Dokumentation ersetzt
+- Flatpak Node.js Extension auf node22 aktualisiert
+
 ## [1.0.0] - 2026-01-29
 
 ### Hinzugefügt

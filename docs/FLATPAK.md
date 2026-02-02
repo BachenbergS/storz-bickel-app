@@ -21,7 +21,7 @@ flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flath
 # Electron BaseApp, Runtime und Node.js SDK Extension installieren
 flatpak install -y --user flathub org.freedesktop.Platform//23.08
 flatpak install -y --user flathub org.freedesktop.Sdk//23.08
-flatpak install -y --user flathub org.freedesktop.Sdk.Extension.node20//23.08
+flatpak install -y --user flathub org.freedesktop.Sdk.Extension.node22//23.08
 flatpak install -y --user flathub org.electronjs.Electron2.BaseApp//23.08
 ```
 
@@ -86,7 +86,7 @@ rm -rf ~/.var/app/org.storzbickel.app
 - **Runtime**: org.freedesktop.Platform 23.08
 - **SDK**: org.freedesktop.Sdk 23.08
 - **Base App**: org.electronjs.Electron2.BaseApp 23.08
-- **Node.js**: org.freedesktop.Sdk.Extension.node20 (für Build)
+- **Node.js**: org.freedesktop.Sdk.Extension.node22 (für Build)
 - **Electron**: 40.1.0 (in node_modules)
 
 ### Berechtigungen
@@ -105,7 +105,7 @@ Das Flatpak benötigt folgende Berechtigungen:
 
 ### Offline-Build
 
-Das Flatpak verwendet `generated-sources.json` mit 1232 npm-Paketquellen für einen vollständig offline-fähigen Build. Dies wird automatisch generiert mit:
+Das Flatpak verwendet `generated-sources.json` für einen vollständig offline-fähigen Build. Dies wird automatisch generiert mit:
 
 ```bash
 npm run generate:flatpak-sources
@@ -160,10 +160,10 @@ rm -rf .flatpak-builder build-dir
 ./build-flatpak.sh
 
 # Node.js SDK Extension prüfen
-flatpak list | grep node20
+flatpak list | grep node22
 
 # Falls nicht installiert:
-flatpak install --user flathub org.freedesktop.Sdk.Extension.node20//23.08
+flatpak install --user flathub org.freedesktop.Sdk.Extension.node22//23.08
 ```
 
 ### Neuinstallation erzwingen
