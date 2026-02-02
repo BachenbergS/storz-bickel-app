@@ -149,7 +149,7 @@ jobs:
         run: |
           # Extrahiere Changelog für diese Version
           VERSION="${{ steps.version.outputs.version }}"
-          CHANGELOG=$(awk "/## \[$VERSION\]/,/## \[/" docs/CHANGELOG.md | sed '1d;$d' | sed '/^$/d')
+          CHANGELOG=$(sed -n "/## \[$VERSION\]/,/## \[/p" docs/CHANGELOG.md | sed '$d' | tail -n +2)
           
           # Fallback wenn keine spezifische Version gefunden
           if [ -z "$CHANGELOG" ]; then
