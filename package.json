@@ -41,16 +41,30 @@
     },
     "win": {
       "target": [
-        "nsis",
-        "portable"
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
       ],
       "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "differentialPackage": false
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.${ext}"
     },
     "files": [
       "main.js",
       "preload.js",
       "index.html",
       "assets/**/*"
-    ]
+    ],
+    "artifactName": "${name}-${version}.${ext}",
+    "publish": null
   }
 }

@@ -190,6 +190,9 @@ jobs:
             dist/*.exe
             dist/*.zip
             *.flatpak
+          files_exclude: |
+            dist/*.yml
+            dist/*.blockmap
           body: |
             ## 🎉 Release v${{ steps.version.outputs.version }}
 
