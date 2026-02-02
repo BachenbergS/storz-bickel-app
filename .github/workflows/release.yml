@@ -11,7 +11,7 @@ permissions:
 # Verhindert parallele Builds desselben Tags
 concurrency:
   group: release-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-linux:
@@ -203,7 +203,6 @@ jobs:
             dist/*.rpm
             dist/*.AppImage
             dist/*.exe
-            dist/*.zip
             *.flatpak
           body: |
             ## 🎉 Release v${{ steps.version.outputs.version }}
