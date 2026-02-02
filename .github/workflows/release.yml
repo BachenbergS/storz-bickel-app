@@ -251,8 +251,8 @@ jobs:
             - Führe den Installer aus
 
             **Portable**
-            - Lade `Storz-&-Bickel-${{ steps.version.outputs.version }}-win.zip` herunter
-            - Entpacke und starte `Storz & Bickel.exe`
+            - Lade `Storz-&-Bickel-${{ steps.version.outputs.version }}-portable.exe` herunter
+            - Starte die Datei direkt (keine Installation nötig)
 
             ---
 
