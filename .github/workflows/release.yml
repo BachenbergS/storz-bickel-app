@@ -116,6 +116,7 @@ jobs:
           flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
           flatpak install --user -y flathub org.freedesktop.Platform//$FLATPAK_VERSION org.freedesktop.Sdk//$FLATPAK_VERSION
           flatpak install --user -y flathub org.electronjs.Electron2.BaseApp//$FLATPAK_VERSION
+          flatpak install --user -y flathub org.freedesktop.Sdk.Extension.node22//$FLATPAK_VERSION
 
       - name: Build Flatpak
         run: |
