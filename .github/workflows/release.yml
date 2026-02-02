@@ -186,10 +186,10 @@ jobs:
         run: |
           rm -f dist/*.yml dist/*.blockmap dist/*.zip
       
-      - name: Delete existing release assets
+      - name: Delete existing release
         continue-on-error: true
         run: |
-          gh release delete-asset v${{ steps.version.outputs.version }} --yes || true
+          gh release delete v${{ steps.version.outputs.version }} --yes || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
