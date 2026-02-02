@@ -48,11 +48,11 @@ modules:
         EOF
       - chmod +x /app/bin/storz-bickel-app
       # Desktop-Datei installieren
-      - install -Dm644 org.storzbickel.app.desktop /app/share/applications/org.storzbickel.app.desktop
+      - install -Dm644 flatpak/org.storzbickel.app.desktop /app/share/applications/org.storzbickel.app.desktop
       # Icon installieren
       - install -Dm644 assets/icon.png /app/share/icons/hicolor/512x512/apps/org.storzbickel.app.png
       # AppStream Metadaten
-      - install -Dm644 org.storzbickel.app.metainfo.xml /app/share/metainfo/org.storzbickel.app.metainfo.xml
+      - install -Dm644 flatpak/org.storzbickel.app.metainfo.xml /app/share/metainfo/org.storzbickel.app.metainfo.xml
     sources:
       # Hauptprojekt (nur die benötigten Dateien)
       - type: dir
