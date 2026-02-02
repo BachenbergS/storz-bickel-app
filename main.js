@@ -44,6 +44,7 @@ function createWindow() {
   // Web Bluetooth Berechtigungen erlauben
   const ses = mainWindow.webContents.session;
   ses.setPermissionRequestHandler((webContents, permission, callback, details) => {
+    console.log('Permission requested:', permission, details);
     if (permission === 'bluetooth' || permission === 'bluetoothDevices' || permission === 'bluetoothScanning') {
       callback(true);
     } else {
@@ -52,12 +53,22 @@ function createWindow() {
   });
   if (ses.setPermissionCheckHandler) {
     ses.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
+      console.log('Permission check:', permission, requestingOrigin);
       if (permission === 'bluetooth' || permission === 'bluetoothDevices' || permission === 'bluetoothScanning') {
         return true;
       }
       return false;
     });
   }
+  
+  // Setze Device Permissions für Bluetooth
+  ses.setDevicePermissionHandler((details) => {
+    console.log('Device permission requested:', details);
+    if (details.deviceType === 'bluetooth') {
+      return true;
+    }
+    return false;
+  });
 
   // Überschreibe UA- und Client Hints für alle Requests
   ses.webRequest.onBeforeSendHeaders((details, callback) => {
@@ -98,6 +109,14 @@ function createWindow() {
     {
       label: 'Datei',
       submenu: [
+        {
+          label: 'Startseite',
+          accelerator: 'Alt+Home',
+          click: () => {
+            mainWindow.loadURL('https://app.storz-bickel.com/');
+          }
+        },
+        { type: 'separator' },
         {
           label: 'Neu laden',
           accelerator: 'CmdOrCtrl+R',
@@ -180,20 +199,32 @@ function createWindow() {
   });
 
   // Verhindere Navigation zu externen URLs (Sicherheit)
+  // Erlaube nur Navigation innerhalb der Storz & Bickel Domain
   mainWindow.webContents.on('will-navigate', (event, url) => {
     const allowedDomains = ['app.storz-bickel.com', 'storz-bickel.com'];
     const urlObj = new URL(url);
     
+    // Externe Domains im Browser öffnen
     if (!allowedDomains.some(domain => urlObj.hostname.includes(domain))) {
       event.preventDefault();
       require('electron').shell.openExternal(url);
     }
+    // Interne Navigation erlauben (für SPA-Routing)
   });
 
-  // Öffne externe Links im Standard-Browser
+  // Öffne neue Fenster (target="_blank") im Standard-Browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    require('electron').shell.openExternal(url);
-    return { action: 'deny' };
+    const allowedDomains = ['app.storz-bickel.com', 'storz-bickel.com'];
+    const urlObj = new URL(url);
+    
+    // Nur externe Links im Browser öffnen
+    if (!allowedDomains.some(domain => urlObj.hostname.includes(domain))) {
+      require('electron').shell.openExternal(url);
+      return { action: 'deny' };
+    }
+    
+    // Interne Links in der App öffnen
+    return { action: 'allow' };
   });
 }
 
