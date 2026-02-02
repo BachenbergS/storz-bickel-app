@@ -13,6 +13,8 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ## [1.0.3] - 2026-02-02
 
 ### Geändert
+- Electron auf 40.1.0 aktualisiert (Chromium 144.0.7559.60, V8 14.4)
+- Node.js auf 24.11.1 aktualisiert
 - Flatpak Runtime von 23.08 auf 24.08 aktualisiert
 - Behebt End-of-Life Warnungen bei Flatpak-Installation
 

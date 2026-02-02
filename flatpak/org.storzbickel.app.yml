@@ -8,6 +8,8 @@ base: org.electronjs.Electron2.BaseApp
 base-version: '24.08'
 command: storz-bickel-app
 separate-locales: false
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node24
 
 finish-args:
   # X11 + XShm access
@@ -32,21 +34,31 @@ finish-args:
 modules:
   - name: storz-bickel-app
     buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/node24/bin
+      env:
+        NPM_CONFIG_LOGLEVEL: info
+        npm_config_cache: /run/build/storz-bickel-app/npm-cache
+        npm_config_offline: 'true'
     build-commands:
-      # Kopiere nur die benötigten App-Dateien (NICHT node_modules!)
+      # Installiere npm-Pakete offline
+      - npm install --offline
+      # Kopiere App-Dateien
       - install -Dm644 main.js /app/storz-bickel-app/main.js
       - install -Dm644 preload.js /app/storz-bickel-app/preload.js
       - install -Dm644 index.html /app/storz-bickel-app/index.html
       - install -Dm644 package.json /app/storz-bickel-app/package.json
       - install -Dm644 assets/icon.png /app/storz-bickel-app/assets/icon.png
-      # Erstelle Wrapper-Skript (nutzt Electron aus BaseApp)
+      # Kopiere Electron Binary aus node_modules
+      - mkdir -p /app/electron
+      - cp -r node_modules/electron/dist/* /app/electron/
+      # Erstelle Wrapper-Skript
       - |
         cat > /app/bin/storz-bickel-app <<'EOF'
         #!/bin/bash
         export ELECTRON_RUN_AS_NODE=
         export TMPDIR="$XDG_RUNTIME_DIR/app/$FLATPAK_ID"
-        # Nutze Electron aus der BaseApp (Pfad für 24.08+)
-        exec zypak-wrapper /app/lib/electron/electron --no-sandbox /app/storz-bickel-app "$@"
+        exec zypak-wrapper /app/electron/electron /app/storz-bickel-app "$@"
         EOF
       - chmod +x /app/bin/storz-bickel-app
       # Desktop-Datei installieren
@@ -56,6 +68,8 @@ modules:
       # AppStream Metadaten
       - install -Dm644 flatpak/org.storzbickel.app.metainfo.xml /app/share/metainfo/org.storzbickel.app.metainfo.xml
     sources:
-      # Hauptprojekt (nur die benötigten Dateien)
+      # Hauptprojekt
       - type: dir
         path: ..
+      # Electron npm packages (generiert mit flatpak-node-generator)
+      - generated-sources.json
