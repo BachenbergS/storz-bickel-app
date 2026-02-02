@@ -15,13 +15,6 @@ if ! command -v flatpak-builder &> /dev/null; then
     exit 1
 fi
 
-# Prüfe ob Electron BaseApp installiert ist
-if ! flatpak list | grep -q "org.electronjs.Electron2.BaseApp"; then
-    echo "Installiere Electron BaseApp..."
-    flatpak install -y flathub org.freedesktop.Platform//$FLATPAK_VERSION org.freedesktop.Sdk//$FLATPAK_VERSION
-    flatpak install -y flathub org.electronjs.Electron2.BaseApp//$FLATPAK_VERSION
-fi
-
 # Wechsle ins flatpak Verzeichnis
 cd "$(dirname "$0")"
 

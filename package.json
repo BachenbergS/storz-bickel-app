@@ -1,6 +1,6 @@
 {
   "name": "storz-bickel-app",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Storz & Bickel Desktop App für Linux & Windows",
   "main": "main.js",
   "scripts": {
@@ -25,10 +25,10 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^40.1.0",
-    "electron-builder": "^26.6.0"
+    "electron-builder": "^26.7.0"
   },
   "build": {
-    "appId": "com.storzbickel.app",
+    "appId": "org.storzbickel.app",
     "productName": "Storz & Bickel",
     "linux": {
       "target": [
@@ -61,7 +61,6 @@
     "files": [
       "main.js",
       "preload.js",
-      "index.html",
       "assets/**/*"
     ],
     "artifactName": "${name}-${version}.${ext}",

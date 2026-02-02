@@ -10,6 +10,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### Geplant
 - macOS Support
 
+## [1.0.4] - 2026-02-02
+
+### Geändert
+- Flatpak Build komplett überarbeitet nach Flathub-Beispiel
+- Verwendet jetzt electron-builder für Flatpak (wie bei anderen Formaten)
+- SDK-Extension node22 für Build-Prozess
+- Skip-Regeln für große Verzeichnisse (reduziert Build-Größe erheblich)
+- Entfernt separates Electron-Modul (wird jetzt von electron-builder gebündelt)
+
+### Behoben
+- Flatpak App startet jetzt korrekt
+
 ## [1.0.3] - 2026-02-02
 
 ### Geändert

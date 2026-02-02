@@ -6,7 +6,9 @@ runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 base: org.electronjs.Electron2.BaseApp
 base-version: '24.08'
-command: storz-bickel-app
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node22
+command: run.sh
 separate-locales: false
 
 finish-args:
@@ -29,33 +31,51 @@ finish-args:
   # Persist data
   - --persist=.config/storz-bickel-app
 
+build-options:
+  append-path: /usr/lib/sdk/node22/bin
+  env:
+    NPM_CONFIG_LOGLEVEL: info
+
 modules:
   - name: storz-bickel-app
     buildsystem: simple
+    build-options:
+      env:
+        XDG_CACHE_HOME: /run/build/storz-bickel-app/flatpak-node/cache
+        npm_config_cache: /run/build/storz-bickel-app/flatpak-node/npm-cache
+        npm_config_offline: 'true'
     build-commands:
-      # Kopiere nur die benötigten App-Dateien (NICHT node_modules!)
-      - install -Dm644 main.js /app/storz-bickel-app/main.js
-      - install -Dm644 preload.js /app/storz-bickel-app/preload.js
-      - install -Dm644 index.html /app/storz-bickel-app/index.html
-      - install -Dm644 package.json /app/storz-bickel-app/package.json
-      - install -Dm644 assets/icon.png /app/storz-bickel-app/assets/icon.png
-      # Erstelle Wrapper-Skript (nutzt Electron aus BaseApp)
+      # Install npm dependencies
+      - npm install --offline
+      # Build the app with electron-builder
       - |
-        cat > /app/bin/storz-bickel-app <<'EOF'
-        #!/bin/bash
-        export ELECTRON_RUN_AS_NODE=
-        export TMPDIR="$XDG_RUNTIME_DIR/app/$FLATPAK_ID"
-        # Nutze Electron aus der BaseApp (Pfad für 24.08+)
-        exec zypak-wrapper /app/lib/electron/electron --no-sandbox /app/storz-bickel-app "$@"
-        EOF
-      - chmod +x /app/bin/storz-bickel-app
+        . ../flatpak-node/electron-builder-arch-args.sh
+        npm run build -- $ELECTRON_BUILDER_ARCH_ARGS --dir
+      # Bundle app and dependencies
+      - cp -a dist/linux*unpacked /app/main
+      # Install app wrapper
+      - install -Dm755 -t /app/bin/ ../run.sh
       # Desktop-Datei installieren
       - install -Dm644 flatpak/org.storzbickel.app.desktop /app/share/applications/org.storzbickel.app.desktop
       # Icon installieren
       - install -Dm644 assets/icon.png /app/share/icons/hicolor/512x512/apps/org.storzbickel.app.png
       # AppStream Metadaten
       - install -Dm644 flatpak/org.storzbickel.app.metainfo.xml /app/share/metainfo/org.storzbickel.app.metainfo.xml
+    subdir: main
     sources:
-      # Hauptprojekt (nur die benötigten Dateien)
       - type: dir
         path: ..
+        dest: main
+        skip:
+          - .flatpak-builder
+          - build-dir
+          - node_modules
+          - dist
+          - .git
+          - "*.flatpak"
+      - generated-sources.json
+      # Wrapper to launch the app
+      - type: script
+        dest-filename: run.sh
+        commands:
+          - zypak-wrapper.sh /app/main/storz-bickel-app "$@"

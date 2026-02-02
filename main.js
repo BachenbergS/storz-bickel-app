@@ -2,6 +2,7 @@
 // 'node:electron' stellt sicher, dass das eingebaute Electron-Modul verwendet wird.
 const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
+const packageJson = require('./package.json');
 
 // Aktiviert experimentelle Web-Plattform-Features (u. a. Web Bluetooth)
 app.commandLine.appendSwitch('enable-experimental-web-platform-features');
@@ -180,7 +181,7 @@ function createWindow() {
               type: 'info',
               title: 'Über Storz & Bickel',
               message: 'Storz & Bickel Desktop App',
-              detail: 'Version 1.0.0\n\nInoffizielle Desktop-Anwendung für die Storz & Bickel Web-App.'
+              detail: `Version ${packageJson.version}\n\nInoffizielle Desktop-Anwendung für die Storz & Bickel Web-App.`
             });
           }
         }
