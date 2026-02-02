@@ -153,7 +153,7 @@ jobs:
           
           # Fallback wenn keine spezifische Version gefunden
           if [ -z "$CHANGELOG" ]; then
-            CHANGELOG="Siehe [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md) für Details."
+            CHANGELOG="Siehe [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/master/docs/CHANGELOG.md) für Details."
           fi
           
           # Speichere für GitHub Output (escape newlines)
@@ -261,10 +261,10 @@ jobs:
             Die App unterstützt Web Bluetooth auf allen Plattformen (Linux & Windows).
 
             **Windows:** Bluetooth muss im System aktiviert sein.
-            **Linux:** Siehe [docs/QUICKSTART.md](https://github.com/${{ github.repository }}/blob/main/docs/QUICKSTART.md) für Bluetooth-Setup.
+            **Linux:** Siehe [docs/QUICKSTART.md](https://github.com/${{ github.repository }}/blob/master/docs/QUICKSTART.md) für Bluetooth-Setup.
 
             ---
 
-            📚 **Vollständiges Changelog:** [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md)
+            📚 **Vollständiges Changelog:** [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/master/docs/CHANGELOG.md)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
