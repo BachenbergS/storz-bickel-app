@@ -8,10 +8,21 @@ on:
 permissions:
   contents: write
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# Verhindert parallele Builds desselben Tags
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
+jobs:
+  build-packages:
+    name: Build ${{ matrix.format }} Package
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        format: [deb, rpm]
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -25,19 +36,40 @@ jobs:
       - name: Install Dependencies
         run: npm ci --ignore-scripts
 
+      - name: Build ${{ matrix.format }}
+        run: npm run build:${{ matrix.format }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload ${{ matrix.format }} Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.format }}-package
+          path: dist/*.${{ matrix.format }}
+          retention-days: 1
+
+  build-flatpak:
+    name: Build Flatpak Bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Get Version
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Build DEB
-        run: npm run build:deb
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build RPM
-        run: npm run build:rpm
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache Flatpak Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/share/flatpak
+            .flatpak-builder
+          key: flatpak-${{ runner.os }}-${{ hashFiles('flatpak/org.storzbickel.app.yml') }}
+          restore-keys: |
+            flatpak-${{ runner.os }}-
 
       - name: Setup Flatpak
         run: |
@@ -52,6 +84,62 @@ jobs:
           flatpak-builder --repo=repo --force-clean build-dir flatpak/org.storzbickel.app.yml
           flatpak build-bundle repo storz-bickel-app-${{ steps.version.outputs.version }}.flatpak org.storzbickel.app
 
+      - name: Upload Flatpak Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-bundle
+          path: '*.flatpak'
+          retention-days: 1
+
+  create-release:
+    name: Create GitHub Release
+    needs: [build-packages, build-flatpak]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Get Version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Extract Changelog
+        id: changelog
+        run: |
+          # Extrahiere Changelog für diese Version
+          VERSION="${{ steps.version.outputs.version }}"
+          CHANGELOG=$(awk "/## \[$VERSION\]/,/## \[/" docs/CHANGELOG.md | sed '1d;$d' | sed '/^$/d')
+          
+          # Fallback wenn keine spezifische Version gefunden
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="Siehe [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md) für Details."
+          fi
+          
+          # Speichere für GitHub Output (escape newlines)
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Download DEB Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deb-package
+          path: dist/
+
+      - name: Download RPM Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: rpm-package
+          path: dist/
+
+      - name: Download Flatpak Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: flatpak-bundle
+          path: ./
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -60,9 +148,15 @@ jobs:
           files: |
             dist/*.deb
             dist/*.rpm
-            storz-bickel-app-${{ steps.version.outputs.version }}.flatpak
+            *.flatpak
           body: |
             ## 🎉 Release v${{ steps.version.outputs.version }}
+
+            ### 📝 Änderungen
+
+            ${{ steps.changelog.outputs.content }}
+
+            ---
 
             ### 📦 Installation
 
@@ -84,10 +178,6 @@ jobs:
 
             ---
 
-            **Hinweis:** Bitte füge die Release-Notes aus [CHANGELOG.md](https://github.com/BachenbergS/storz-bickel-app/blob/main/CHANGELOG.md) hinzu und veröffentliche dann das Release.
-
-            ## 📝 Changelog
-
-            Siehe [CHANGELOG.md](https://github.com/BachenbergS/storz-bickel-app/blob/main/CHANGELOG.md) für alle Änderungen.
+            📚 **Vollständiges Changelog:** [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
