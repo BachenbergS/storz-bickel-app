@@ -70,7 +70,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Build Windows
-        run: npm run build -- --win
+        run: npx electron-builder --win
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
