@@ -10,6 +10,12 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### Geplant
 - macOS Support
 
+## [1.0.3] - 2026-02-02
+
+### Geändert
+- Flatpak Runtime von 23.08 auf 24.08 aktualisiert
+- Behebt End-of-Life Warnungen bei Flatpak-Installation
+
 ## [1.0.2] - 2026-02-02
 
 ### Hinzugefügt
