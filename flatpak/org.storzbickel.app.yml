@@ -1,3 +1,5 @@
+# HINWEIS: runtime-version und base-version werden aus .flatpak-runtime-version gelesen
+# Zum Ändern der Runtime-Version: Bearbeite .flatpak-runtime-version im Projekt-Root
 app-id: org.storzbickel.app
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'

@@ -48,6 +48,15 @@ npm run build:flatpak   # Flatpak (universal)
 npm run build           # NSIS Installer + Portable
 ```
 
+### Versionen aktualisieren
+
+Das Projekt nutzt zentrale Versionsdateien:
+
+- **`.node-version`** - Node.js Version für Entwicklung und CI/CD
+- **`.flatpak-runtime-version`** - Flatpak Runtime Version (freedesktop.org Platform)
+
+Die Build-Skripte lesen diese Dateien automatisch und passen die Konfiguration entsprechend an.
+
 ## ⌨️ Tastenkombinationen
 
 - **Ctrl+R** - Neu laden

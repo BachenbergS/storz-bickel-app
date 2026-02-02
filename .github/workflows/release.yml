@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.22.0'
+          node-version-file: '.node-version'
           cache: 'npm'
 
       - name: Install Dependencies
@@ -62,7 +62,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.22.0'
+          node-version-file: '.node-version'
           cache: 'npm'
 
       - name: Install Dependencies
@@ -93,7 +93,9 @@ jobs:
 
       - name: Get Version
         id: version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "FLATPAK_VERSION=$(cat .flatpak-runtime-version | tr -d '[:space:]')" >> $GITHUB_OUTPUT
 
       - name: Cache Flatpak Dependencies
         uses: actions/cache@v4
@@ -107,11 +109,13 @@ jobs:
 
       - name: Setup Flatpak
         run: |
+          FLATPAK_VERSION="${{ steps.version.outputs.FLATPAK_VERSION }}"
+          echo "Using Flatpak Version: $FLATPAK_VERSION"
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder
           flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install --user -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
-          flatpak install --user -y flathub org.electronjs.Electron2.BaseApp//24.08
+          flatpak install --user -y flathub org.freedesktop.Platform//$FLATPAK_VERSION org.freedesktop.Sdk//$FLATPAK_VERSION
+          flatpak install --user -y flathub org.electronjs.Electron2.BaseApp//$FLATPAK_VERSION
 
       - name: Build Flatpak
         run: |
