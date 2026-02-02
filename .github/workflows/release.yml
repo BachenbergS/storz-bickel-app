@@ -182,12 +182,22 @@ jobs:
           name: flatpak-bundle
           path: ./
 
+      - name: Clean up unwanted files
+        run: |
+          rm -f dist/*.yml dist/*.blockmap dist/*.zip
+      
+      - name: Delete existing release assets
+        continue-on-error: true
+        run: |
+          gh release delete-asset v${{ steps.version.outputs.version }} --yes || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           generate_release_notes: false
-          overwrite: true
           files: |
             dist/*.deb
             dist/*.rpm
@@ -195,9 +205,6 @@ jobs:
             dist/*.exe
             dist/*.zip
             *.flatpak
-          files_exclude: |
-            dist/*.yml
-            dist/*.blockmap
           body: |
             ## 🎉 Release v${{ steps.version.outputs.version }}
 
