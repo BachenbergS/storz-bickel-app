@@ -43,8 +43,8 @@ modules:
         #!/bin/bash
         export ELECTRON_RUN_AS_NODE=
         export TMPDIR="$XDG_RUNTIME_DIR/app/$FLATPAK_ID"
-        # Nutze Electron aus der BaseApp statt aus node_modules
-        exec zypak-wrapper /app/lib/electron/electron --no-sandbox /app/storz-bickel-app "$@"
+        # Nutze Electron aus der BaseApp
+        exec zypak-wrapper /app/bin/electron --no-sandbox /app/storz-bickel-app "$@"
         EOF
       - chmod +x /app/bin/storz-bickel-app
       # Desktop-Datei installieren

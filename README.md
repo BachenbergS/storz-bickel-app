@@ -14,10 +14,12 @@ npm start
 
 ## ✨ Features
 
-- 🖥️ Native Desktop-Anwendung für Linux
+- 🖥️ Native Desktop-Anwendung für Linux & Windows
 - 🔒 Sichere Implementierung mit Context Isolation
 - 🔵 Web Bluetooth Unterstützung für Gerätesteuerung
-- 📦 Mehrere Installationsformate (AppImage, DEB, RPM, Flatpak)
+- 📦 Mehrere Installationsformate:
+  - **Linux:** AppImage, DEB, RPM, Flatpak
+  - **Windows:** Installer (NSIS), Portable
 
 ## 📦 Installation
 
@@ -33,14 +35,17 @@ npm start
 ### Build
 
 ```bash
-# Alle Formate
+# Linux - Alle Formate
 npm run build
 
 # Einzelne Formate
-npm run build:appimage
-npm run build:deb
-npm run build:rpm
-npm run build:flatpak
+npm run build:appimage  # AppImage (portabel)
+npm run build:deb       # Debian/Ubuntu
+npm run build:rpm       # Fedora/RHEL/openSUSE
+npm run build:flatpak   # Flatpak (universal)
+
+# Windows (auf Windows-System oder mit Wine)
+npm run build           # NSIS Installer + Portable
 ```
 
 ## ⌨️ Tastenkombinationen

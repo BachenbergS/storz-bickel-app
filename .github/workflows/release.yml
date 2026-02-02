@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "v*.*.*"
+      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -14,15 +14,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-packages:
-    name: Build ${{ matrix.format }} Package
+  build-linux:
+    name: Build Linux ${{ matrix.format }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        format: [deb, rpm]
-
+        format: [deb, rpm, appimage]
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -30,8 +30,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22.22.0"
-          cache: "npm"
+          node-version: '22.22.0'
+          cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci --ignore-scripts
@@ -44,15 +44,49 @@ jobs:
       - name: Upload ${{ matrix.format }} Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.format }}-package
-          path: dist/*.${{ matrix.format }}
+          name: linux-${{ matrix.format }}
+          path: |
+            dist/*.${{ matrix.format }}
+            dist/*.AppImage
+          retention-days: 1
+
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.0'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build Windows
+        run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            dist/*.exe
+            dist/*.zip
           retention-days: 1
 
   build-flatpak:
     name: Build Flatpak Bundle
     runs-on: ubuntu-latest
     timeout-minutes: 45
-
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -88,15 +122,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: flatpak-bundle
-          path: "*.flatpak"
+          path: '*.flatpak'
           retention-days: 1
 
   create-release:
     name: Create GitHub Release
-    needs: [build-packages, build-flatpak]
+    needs: [build-linux, build-windows, build-flatpak]
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -111,27 +145,28 @@ jobs:
           # Extrahiere Changelog für diese Version
           VERSION="${{ steps.version.outputs.version }}"
           CHANGELOG=$(awk "/## \[$VERSION\]/,/## \[/" docs/CHANGELOG.md | sed '1d;$d' | sed '/^$/d')
-
+          
           # Fallback wenn keine spezifische Version gefunden
           if [ -z "$CHANGELOG" ]; then
             CHANGELOG="Siehe [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md) für Details."
           fi
-
+          
           # Speichere für GitHub Output (escape newlines)
           echo "content<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Download DEB Artifact
+      - name: Download Linux Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: deb-package
+          pattern: linux-*
           path: dist/
+          merge-multiple: true
 
-      - name: Download RPM Artifact
+      - name: Download Windows Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: rpm-package
+          name: windows
           path: dist/
 
       - name: Download Flatpak Artifact
@@ -148,6 +183,9 @@ jobs:
           files: |
             dist/*.deb
             dist/*.rpm
+            dist/*.AppImage
+            dist/*.exe
+            dist/*.zip
             *.flatpak
           body: |
             ## 🎉 Release v${{ steps.version.outputs.version }}
@@ -160,21 +198,52 @@ jobs:
 
             ### 📦 Installation
 
-            #### DEB (Debian/Ubuntu)
+            #### 🐧 Linux
+
+            **DEB (Debian/Ubuntu)**
             ```bash
             sudo dpkg -i storz-bickel-app_${{ steps.version.outputs.version }}_amd64.deb
             ```
 
-            #### RPM (Fedora/RHEL)
+            **RPM (Fedora/RHEL/openSUSE)**
             ```bash
             sudo rpm -i storz-bickel-app-${{ steps.version.outputs.version }}.x86_64.rpm
+            # oder auf openSUSE:
+            sudo zypper install storz-bickel-app-${{ steps.version.outputs.version }}.x86_64.rpm
             ```
 
-            #### Flatpak
+            **AppImage (Universal)**
+            ```bash
+            chmod +x storz-bickel-app-${{ steps.version.outputs.version }}.AppImage
+            ./storz-bickel-app-${{ steps.version.outputs.version }}.AppImage
+            ```
+
+            **Flatpak**
             ```bash
             flatpak install storz-bickel-app-${{ steps.version.outputs.version }}.flatpak
             flatpak run org.storzbickel.app
             ```
+
+            #### 🪟 Windows
+
+            > ⚠️ **Hinweis:** Windows-Builds sind ungetestet. Feedback willkommen!
+
+            **Installer (empfohlen)**
+            - Lade `Storz-&-Bickel-Setup-${{ steps.version.outputs.version }}.exe` herunter
+            - Führe den Installer aus
+
+            **Portable**
+            - Lade `Storz-&-Bickel-${{ steps.version.outputs.version }}-win.zip` herunter
+            - Entpacke und starte `Storz & Bickel.exe`
+
+            ---
+
+            ### 🔵 Web Bluetooth
+
+            Die App unterstützt Web Bluetooth auf allen Plattformen (Linux & Windows).
+
+            **Windows:** Bluetooth muss im System aktiviert sein.
+            **Linux:** Siehe [docs/QUICKSTART.md](https://github.com/${{ github.repository }}/blob/main/docs/QUICKSTART.md) für Bluetooth-Setup.
 
             ---
 

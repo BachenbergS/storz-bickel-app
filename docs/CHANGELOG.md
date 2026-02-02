@@ -8,7 +8,19 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Geplant
-- Weitere Verbesserungen und Features
+- macOS Support
+
+## [1.0.2] - 2026-02-02
+
+### Hinzugefügt
+- AppImage Support (portabel, keine Installation nötig)
+- Windows Support (NSIS Installer + Portable)
+- Parallele Builds für alle Plattformen
+- openSUSE in RPM-Dokumentation
+
+### Geändert
+- Workflow optimiert: Linux/Windows/Flatpak bauen parallel
+- Release-Notes enthalten jetzt alle Plattformen
 
 ## [1.0.1] - 2026-02-02
 

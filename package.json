@@ -1,7 +1,7 @@
 {
   "name": "storz-bickel-app",
-  "version": "1.0.1",
-  "description": "Storz & Bickel Desktop App für Linux",
+  "version": "1.0.2",
+  "description": "Storz & Bickel Desktop App für Linux & Windows",
   "main": "main.js",
   "scripts": {
     "start": "env -u ELECTRON_RUN_AS_NODE electron .",
@@ -33,9 +33,17 @@
     "linux": {
       "target": [
         "deb",
-        "rpm"
+        "rpm",
+        "AppImage"
       ],
       "category": "Utility",
+      "icon": "assets/icon.png"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
       "icon": "assets/icon.png"
     },
     "files": [
